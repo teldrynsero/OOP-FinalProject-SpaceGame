@@ -1,1 +1,4 @@
-WIP
+Our project is a simple single-player farming video game using pygame
+in python. The game will be object-oriented and include features
+such as: A user controlled character, interactable NPCs, crops
+that can be planted, watered, harvested, and sold for money, and more.
