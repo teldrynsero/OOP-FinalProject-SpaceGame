@@ -11,6 +11,8 @@ class Game:
         self._image_surf = None
         self.x = 100
         self.y = 100
+        self.x_change = 0
+        self.y_change = 0
         self.velocity = 12
         self.game_started = False
         self.clock = pygame.time.Clock()
@@ -29,6 +31,8 @@ class Game:
         self._running = True
         self._image_surf = Game.load("startscreen") #background
         self.frog = Game.load("player_0")
+        self.npc = Game.load("npc")
+        self.npc_rect = pygame.Rect((200,70),(80,35)) #npc boundaries
         self.ground = Game.load("ground")
         mixer.music.load("media/sounds/earthshine.mp3")
         mixer.music.set_volume(0.7)
@@ -64,6 +68,7 @@ class Game:
 
         if self.game_started == True:
             self._display_surf.blit(self.ground,(0,0))
+            self._display_surf.blit(self.npc,(200,70))
             self._display_surf.blit(self.frog,(self.x,self.y))
 
             keys = pygame.key.get_pressed()
@@ -71,26 +76,55 @@ class Game:
             if keys[pygame.K_a]:
                 #text = self.font.render('you pressed left', True, (0, 255, 0),(0, 0, 128))
                 self.x -= 1
+                self.x_change = -1
                 self.frog = Game.load("player_5")
                 print(self.x)
+                self.frog_rect = self.frog.get_rect(topleft = (self.x, self.y))
+                if self.frog_rect.colliderect(self.npc_rect): #did player collide with npc?
+                    if self.x_change > 0:
+                        self.frog_rect.right = self.npc_rect.left
+                    elif self.x_change < 0:
+                        self.frog_rect.left = self.npc_rect.right
+                    self.x = self.frog_rect.x
 
             if keys[pygame.K_d]:
-                #text = self.font.render('you pressed left', True, (0, 255, 0),(0, 0, 128))
                 self.x += 1
+                self.x_change = 1
                 self.frog = Game.load("player_7")
                 print(self.x)
+                self.frog_rect = self.frog.get_rect(topleft = (self.x, self.y))
+                if self.frog_rect.colliderect(self.npc_rect): #did player collide with npc?
+                    if self.x_change > 0:
+                        self.frog_rect.right = self.npc_rect.left
+                    elif self.x_change < 0:
+                        self.frog_rect.left = self.npc_rect.right
+                    self.x = self.frog_rect.x
 
             if keys[pygame.K_w]:
-                #text = self.font.render('you pressed left', True, (0, 255, 0),(0, 0, 128))
                 self.y -= 1
+                self.y_change = -1
                 self.frog = Game.load("player_3")
                 print(self.y)
+                self.frog_rect = self.frog.get_rect(topleft = (self.x, self.y))
+                if self.frog_rect.colliderect(self.npc_rect): #did player collide with npc?
+                    if self.y_change < 0:
+                        self.frog_rect.top = self.npc_rect.bottom
+                    elif self.y_change > 0:
+                        self.frog_rect.bottom = self.npc_rect.top
+                    self.y = self.frog_rect.y
 
             if keys[pygame.K_s]:
-                #text = self.font.render('you pressed left', True, (0, 255, 0),(0, 0, 128))
                 self.y += 1
-                self.frog = Game.load("player_1") 
+                self.y_change = 1
+                self.frog = Game.load("player_1")
                 print(self.y)
+                self.frog_rect = self.frog.get_rect(topleft = (self.x, self.y))
+                if self.frog_rect.colliderect(self.npc_rect): #did player collide with npc?
+                    if self.y_change < 0:
+                        self.frog_rect.top = self.npc_rect.bottom
+                    elif self.y_change > 0:
+                        self.frog_rect.bottom = self.npc_rect.top
+                    self.y = self.frog_rect.y
 
             #player walking boundaries
             if self.x < 0:
@@ -104,6 +138,7 @@ class Game:
 
             if self.y < 60:
                 self.y = 60
+
 
         pygame.display.flip()
 
