@@ -3,6 +3,8 @@ from pygame.locals import *
 from pygame import mixer
 #pip install pygame
 
+from plant import Plant
+
 class Game:
     def __init__(self):
         self._running = True
@@ -62,6 +64,14 @@ class Game:
 
     def on_loop(self):
         pass
+
+    # TESTING
+    def create_plant(self, plant_name):
+        self.plant = Plant(plant_name, self.x, self.y)
+        print(self.plant.file_name)
+        self.plant_sprite = Game.load(self.plant.file_name)
+        self.plant_rect = self.plant_sprite.get_rect(topleft = (self.x, self.y))
+        self._display_surf.blit(self.plant_sprite,(self.x,self.y))
 
     def on_render(self):
         self._display_surf.blit(self._image_surf,(0,0))
@@ -139,6 +149,15 @@ class Game:
             if self.y < 60:
                 self.y = 60
 
+            # for single-press events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self._running = False
+                if event.type == pygame.KEYDOWN:
+                    # planting
+                    if event.key == pygame.K_e:
+                        Game.create_plant(self,"honeyshroom")
+                
 
         pygame.display.flip()
 
