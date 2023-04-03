@@ -5,11 +5,21 @@ from player import Player
 from npc import Npc, Shopkeeper
 from inventory import Inventory
 from renderedtext import RenderedText
+import sys
+import os
 
 #The use of multiple smaller classes (Player and Npc) that
 #work with a bigger class (Game) is an example of the use
 #of the ADVANCED DESIGN PATTERN known as FACADE. It helps
 #in easier code readibility and organization.
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path,relative_path)
 
 class Game:
     def __init__(self):
@@ -29,7 +39,7 @@ class Game:
 
     def load(image): #makes loading images easier
         imageName = image
-        imageTitle = "media/img/"+str(imageName)+".png"
+        imageTitle = resource_path("media/img/"+str(imageName)+".png")
         image = pygame.image.load(imageTitle)
         return image
  
@@ -50,11 +60,13 @@ class Game:
         self.ground = Game.load("ground")
         self.star = Game.load("star")
 
-        mixer.music.load("media/sounds/earthshine.mp3")
+        music_url = resource_path("media/sounds/earthshine.mp3")
+        mixer.music.load(music_url)
         mixer.music.set_volume(0.7)
         mixer.music.play()
 
-        self.font = pygame.font.Font('media/Pixeled.ttf', 15)
+        font_url = resource_path("media/Pixeled.ttf")
+        self.font = pygame.font.Font(font_url, 15)
         self.beginning_text = self.font.render(self.renderedText.tutorial1, True, pygame.Color(255,255,255))
         self.npc_text = self.font.render('', True, pygame.Color(255,255,255))
 
