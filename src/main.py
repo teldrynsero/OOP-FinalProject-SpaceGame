@@ -18,6 +18,7 @@ class Game:
         self.velocity = 12
         self.game_started = False
         self.clock = pygame.time.Clock()
+        self.all_plants = {} # keep track of all planted seeds
 
     def load(image):
         imageName = image
@@ -80,6 +81,9 @@ class Game:
             self._display_surf.blit(self.ground,(0,0))
             self._display_surf.blit(self.npc,(200,70))
             self._display_surf.blit(self.frog,(self.x,self.y))
+
+            for key in self.all_plants:
+                self._display_surf.blit(self.plant_sprite,key)
 
             keys = pygame.key.get_pressed()
 
@@ -156,7 +160,9 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     # planting
                     if event.key == pygame.K_e:
-                        Game.create_plant(self,"honeyshroom")
+                        self.all_plants.setdefault((self.x, self.y), "honeyshroom")
+                        Game.create_plant(self,self.all_plants[(self.x, self.y)])
+                        print(self.all_plants)
                 
 
         pygame.display.flip()
