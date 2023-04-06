@@ -147,6 +147,11 @@ class Game:
                         self.inventory.honeyshroomSeeds += 1
                         self.inventory.rockTotal -= 5
 
+            if event.key == pygame.K_e:
+                self.all_plants.setdefault((self.player.x, self.player.y), "honeyshroom")
+                Game.create_plant(self,self.all_plants[(self.player.x, self.player.y)])
+                print(self.all_plants)
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
                 self.playerSprite = Game.load("player_4")
@@ -310,17 +315,6 @@ class Game:
                 self._display_surf.blit(self.honSeeds, (10,400))
                 self.wallet_text = self.font.render("Rocks: " + str(self.inventory.rockTotal), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
                 self._display_surf.blit(self.wallet_text, (10,435))
-
-            # for single-press events
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self._running = False
-                if event.type == pygame.KEYDOWN:
-                    # planting
-                    if event.key == pygame.K_e:
-                        self.all_plants.setdefault((self.player.x, self.player.y), "honeyshroom")
-                        Game.create_plant(self,self.all_plants[(self.player.x, self.player.y)])
-                        print(self.all_plants)
 
         pygame.display.flip() #update sprite
 
