@@ -8,10 +8,17 @@ from renderedtext import RenderedText
 import sys
 import os
 
-#The use of multiple smaller classes (Player and Npc) that
+#The use of multiple smaller classes (ex. Player & Npc) that
 #work with a bigger class (Game) is an example of the use
 #of the ADVANCED DESIGN PATTERN known as FACADE. It helps
 #in easier code readibility and organization.
+
+#The code uses the COMMON DESIGN PATTERN known as SINGLETON.
+#It is implemented using a classic singleton, wherein an
+#instance of a class is only created once (in this case, it
+#is the Game class). Throughout the lifetime of the program,
+#only one Game instance is needed, thus making the use of
+#the singleton pattern useful.
 
 def resource_path(relative_path):
     try:
@@ -22,6 +29,11 @@ def resource_path(relative_path):
     return os.path.join(base_path,relative_path)
 
 class Game:
+    def __new__(cls): #create instance if none exist, else only use preexisting instance
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Game, cls).__new__(cls)
+        return cls.instance
+    
     def __init__(self):
         self._running = True
         self._display_surf = None
@@ -56,7 +68,7 @@ class Game:
         self.npcSprite = [Game.load("npc"), Game.load("npc_1"), Game.load("npc"), Game.load("npc_1"),]
         self.npc_rect = pygame.Rect((200,70),(80,35)) #npc boundaries
         self.shopkeeperSprite = Game.load("shop")
-        self.shop_rect = pygame.Rect((470,70),(80,35)) #npc boundaries
+        self.shop_rect = pygame.Rect((470,70),(80,35)) #shopkeeper npc boundaries
         self.ground = Game.load("ground")
         self.star = Game.load("star")
 
@@ -116,7 +128,6 @@ class Game:
                     self.show_inventory = False
                 else: #closed so open it
                     self.beginning_text = self.font.render(self.renderedText.tutorial4, True, pygame.Color(255,255,255))
-                    #self.starting_text_show = False #tutorial ends for now
                     self.show_inventory = True
 
             if event.key == pygame.K_b: #buy seeds from shop
@@ -126,23 +137,41 @@ class Game:
                     self.purchase_text1 = self.font.render(self.renderedText.purchase1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                     self.shopkeeper.purchasing = True
                     self.shopkeeper.selling = False
+
             if event.key == pygame.K_n: #sell plants to shop
                 if self.shopkeeper.shop_talking == True: #currently talking to shop
-                    #print("sell here")
+                    self.sell_text = self.font.render(self.renderedText.sell, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
+                    self.sell_text1 = self.font.render(self.renderedText.sell1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                     self.shopkeeper.selling = True
                     self.shopkeeper.purchasing = False
 
-            if event.key == pygame.K_o: #buy elaberries
+            if event.key == pygame.K_o: #buy OR sell elaberries
                 if self.shopkeeper.purchasing == True: #purchase menu open
-                    if self.inventory.rockTotal >= 10:
+                    if self.inventory.rockTotal >= 10: #player can buy elaberry
                         self.inventory.elaberrySeeds += 1
                         self.inventory.rockTotal -= 10
+                    else: #player cannot afford it
+                        pass #play error audio
+                if self.shopkeeper.selling == True: #selling menu open
+                    if self.inventory.elaberryGrown >= 1: #player has at least 1 grown elaberry
+                        self.inventory.elaberryGrown -= 1
+                        self.inventory.rockTotal += 40
+                    else: #player has no grown elaberry
+                        pass #play error audio
 
-            if event.key == pygame.K_p: #buy elaberries
+            if event.key == pygame.K_p: #buy OR sell honeyshrooms
                 if self.shopkeeper.purchasing == True: #purchase menu open
-                    if self.inventory.rockTotal >= 5:
+                    if self.inventory.rockTotal >= 5: #player can buy honeyshroom
                         self.inventory.honeyshroomSeeds += 1
                         self.inventory.rockTotal -= 5
+                    else: #player cannot afford it
+                        pass #play error audio
+                if self.shopkeeper.selling == True: #selling menu open
+                    if self.inventory.honeyshroomGrown >= 1:
+                        self.inventory.honeyshroomGrown -= 1
+                        self.inventory.rockTotal += 20
+                    else: #player has no grown honeyshroom
+                        pass #play error audio
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
@@ -172,6 +201,7 @@ class Game:
         if self.game_started == True:
             self.npc = self.npcSprite[self.nonplayablechar.value]
 
+            #display all image assets once game starts
             self._display_surf.blit(self.star,(0,0))
             self._display_surf.blit(self.ground,(0,0))
             self._display_surf.blit(self.npc,(200,70))
@@ -237,7 +267,6 @@ class Game:
                         self.playerSprite_rect.bottom = self.shop_rect.top
                     self.player.y = self.playerSprite_rect.y
 
-
             if keys[pygame.K_s]:
                 self.player.y += 1
                 self.player.y_change = 1
@@ -282,20 +311,27 @@ class Game:
                 self._display_surf.blit(self.npc_text, (300,50))
 
             if self.shopkeeper.shop_talking == True: #SHOP npc talking text
-                self._display_surf.blit(self.shop_text, (260, 175))
-                self._display_surf.blit(self.shop_text1, (220, 210))
-                self._display_surf.blit(self.shop_text2, (220, 250))
+                self._display_surf.blit(self.shop_text, (260, 115))
+                self._display_surf.blit(self.shop_text1, (220, 150))
+                self._display_surf.blit(self.shop_text2, (220, 190))
                 if self.shopkeeper.purchasing == True:
-                    self._display_surf.blit(self.purchase_text, (140, 285))
-                    self._display_surf.blit(self.purchase_text1, (130, 325))
+                    self._display_surf.blit(self.purchase_text, (140, 225))
+                    self._display_surf.blit(self.purchase_text1, (130, 265))
+                if self.shopkeeper.selling == True:
+                    self._display_surf.blit(self.sell_text, (140, 225))
+                    self._display_surf.blit(self.sell_text1, (130, 265))
 
-            if self.show_inventory == True: #inventory shows seed amount and rock (currency amount)
+            if self.show_inventory == True: #inventory shows seed amount and rock (currency amount) and grown crops
                 self.elaSeeds = self.font.render('Elaberry Seeds: ' + str(self.inventory.elaberrySeeds), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
                 self._display_surf.blit(self.elaSeeds, (10,365))
                 self.honSeeds = self.font.render('Honeyshroom Seeds: ' + str(self.inventory.honeyshroomSeeds), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
                 self._display_surf.blit(self.honSeeds, (10,400))
                 self.wallet_text = self.font.render("Rocks: " + str(self.inventory.rockTotal), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
                 self._display_surf.blit(self.wallet_text, (10,435))
+                self.elaberry = self.font.render('Elaberries: ' + str(self.inventory.elaberryGrown), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
+                self._display_surf.blit(self.elaberry, (470, 365))
+                self.honeyshroom = self.font.render('Honeyshrooms: ' + str(self.inventory.honeyshroomGrown), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
+                self._display_surf.blit(self.honeyshroom, (420, 400))
 
         pygame.display.flip() #update sprite
 
@@ -316,4 +352,6 @@ class Game:
  
 if __name__ == "__main__" :
     SpaceGame = Game()
+    #nextGame = Game()
+    #print(SpaceGame is nextGame) #ensure only one Game instance is made
     SpaceGame.on_execute()
