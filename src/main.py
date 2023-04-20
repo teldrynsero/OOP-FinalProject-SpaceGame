@@ -39,6 +39,7 @@ class Game:
         self.show_inventory = False
         self.clock = pygame.time.Clock()
         self.all_plants = {} # keep track of all planted seeds
+        self.plant_name = "honeyshroom"
 
     def load(image): #makes loading images easier
         imageName = image
@@ -140,24 +141,35 @@ class Game:
                     if self.inventory.rockTotal >= 10:
                         self.inventory.elaberrySeeds += 1
                         self.inventory.rockTotal -= 10
-                else:
+                else: # "hold" elaberries
                     self.plant_name = "elaberries"
 
-            if event.key == pygame.K_p: #buy elaberries
+            if event.key == pygame.K_p: #buy honeyshrooms
                 if self.shopkeeper.purchasing == True: #purchase menu open
                     if self.inventory.rockTotal >= 5:
                         self.inventory.honeyshroomSeeds += 1
                         self.inventory.rockTotal -= 5
-                else:
+                else: # "hold" honeyshrooms
                     self.plant_name = "honeyshroom"
 
             if event.key == pygame.K_e: # planting
-                if self.plant_name == "honeyshroom":
-                    self.inventory.honeyshroomSeeds -=1
-                elif self.plant_name == "elaberries":
-                    self.inventory.elaberrySeeds -=1
-                Game.create_plant(self,self.plant_name)
-                print(self.all_plants)
+                if self.plant_name == "honeyshroom": # "holding" honeyshrooms
+                    if self.inventory.honeyshroomSeeds >= 1:
+                        self.inventory.honeyshroomSeeds -=1
+                        Game.create_plant(self,self.plant_name)
+                        print(self.all_plants)
+                elif self.plant_name == "elaberries": # "holding" elaberries
+                    if self.inventory.elaberrySeeds >= 1:
+                        self.inventory.elaberrySeeds -=1
+                        Game.create_plant(self,self.plant_name)
+                        print(self.all_plants)
+
+            if event.key == pygame.K_q: # watering
+                for key in self.all_plants:
+                    if self.playerSprite_rect.colliderect(key.plant_bounds):
+                        if key.stage < key.max_stage:
+                            key.stage +=1
+                        print(key.name + str(key.stage))
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
@@ -186,8 +198,8 @@ class Game:
         self.plant = Plant(plant_name, self.player.x, self.player.y)
         # self.all_plants.setdefault((self.player.x, self.player.y), self.plant)
         self.all_plants.setdefault(self.plant, self.plant.plant_bounds)
-        print(self.plant.file_name)
-        self.plant_sprite = Game.load(self.plant.file_name)
+        print(self.plant.name)
+        self.plant_sprite = Game.load(self.plant.name + str(self.plant.stage))
         self.plant_rect = self.plant_sprite.get_rect(topleft = (self.player.x, self.player.y))
         # self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))
 
@@ -204,8 +216,8 @@ class Game:
             self._display_surf.blit(self.playerSprite,(self.player.x,self.player.y))
 
             for key in self.all_plants:
-                self.plant_sprite = Game.load(key.file_name)
-                self.plant_rect = self.plant_sprite.get_rect(topleft = (self.player.x, self.player.y))
+                self.plant_sprite = Game.load(key.name + str(key.stage))
+                self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
                 self._display_surf.blit(self.plant_sprite,key.plant_point)
 
             keys = pygame.key.get_pressed()

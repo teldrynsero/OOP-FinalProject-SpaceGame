@@ -9,14 +9,18 @@ class Plant():
     def __init__(self, name, x, y):
         self.x = x
         self.y = y
-        self.plant_bounds = pygame.Rect((x,y), (105,172))
+        self.plant_bounds = pygame.Rect((x,y), (105,48))
         self.name = name + "_"
-        self.stage = 1
+        self.stage = 0
 
         self.plant_point = (x,y)
 
     # def file(self):
-        self.file_name = self.name + str(self.stage)
+        # self.file_name = self.name + str(self.stage)
         # self.image = pygame.image.load(self.file_name)
         # self._display_surf.blit(self.file_name, (self.x,self.y))
+        if name == "honeyshroom":
+            self.max_stage = 2
+        elif name == "elaberries":
+            self.max_stage = 3
         
