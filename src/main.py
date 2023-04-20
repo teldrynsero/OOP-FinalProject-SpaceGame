@@ -72,10 +72,23 @@ class Game:
         self.ground = Game.load("ground")
         self.star = Game.load("star")
 
+        #sound effects
+        error_url = resource_path("media/sounds/invalid.mp3")
+        self.error_sound = pygame.mixer.Sound(error_url)
+        buy_url = resource_path("media/sounds/buy.mp3")
+        self.buy_sound = pygame.mixer.Sound(buy_url)
+        open_url = resource_path("media/sounds/inventoryunzip.mp3")
+        self.open_sound = pygame.mixer.Sound(open_url)
+
+        npc_talk_url = resource_path("media/sounds/npctalk.mp3")
+        self.npc_talk_sound = pygame.mixer.Sound(npc_talk_url)
+        shop_talk_url = resource_path("media/sounds/shoptalk.mp3")
+        self.shop_talk_sound = pygame.mixer.Sound(shop_talk_url)
+
         music_url = resource_path("media/sounds/earthshine.mp3")
         mixer.music.load(music_url)
         mixer.music.set_volume(0.7)
-        mixer.music.play()
+        mixer.music.play(-1) #plays forever
 
         font_url = resource_path("media/Pixeled.ttf")
         self.font = pygame.font.Font(font_url, 15)
@@ -88,14 +101,16 @@ class Game:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN: #enter key pressed
-                self._image_surf = Game.load("morning_0") #change background
-                self.game_started = True #start the game
-                self.starting_text_show = True #render beginning text instructions
+                if self.game_started == False: #game isn't started so start it now
+                    self._image_surf = Game.load("morning_0") #change background
+                    self.game_started = True #start the game
+                    self.starting_text_show = True #render beginning text instructions
 
             if event.key == pygame.K_t: #talk to npc
                 if self.game_started == True:
                     if ((self.player.x > 125) and (self.player.x < 285) and (self.player.y > 50) and (self.player.y < 110)): #if near npc
                         if self.nonplayablechar.npc_talking == False:
+                            pygame.mixer.Sound.play(self.npc_talk_sound)
                             self.beginning_text = self.font.render(self.renderedText.tutorial3, True, pygame.Color(255,255,255)) #move on to next tutorial
                             if self.nonplayablechar.first_time_talking == True:
                                 self.npc_text = self.font.render(self.renderedText.npc1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
@@ -111,6 +126,7 @@ class Game:
 
                     if ((self.player.x > 390) and (self.player.x < 600) and (self.player.y > 50) and (self.player.y < 110)): #if near SHOP NPC
                         if self.shopkeeper.shop_talking == False:
+                            pygame.mixer.Sound.play(self.shop_talk_sound)
                             self.beginning_text = self.font.render(self.renderedText.tutorial5, True, pygame.Color(255,255,255)) #move on to next tutorial
                             self.shop_text = self.font.render(self.renderedText.shop, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                             self.shop_text1 = self.font.render(self.renderedText.shop1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
@@ -124,6 +140,7 @@ class Game:
                 #else ignore because the player is not near anything to talk to
 
             if event.key == pygame.K_i: #open inventory
+                pygame.mixer.Sound.play(self.open_sound)
                 if self.show_inventory == True: #already open so close it
                     self.show_inventory = False
                 else: #closed so open it
@@ -150,28 +167,32 @@ class Game:
                     if self.inventory.rockTotal >= 10: #player can buy elaberry
                         self.inventory.elaberrySeeds += 1
                         self.inventory.rockTotal -= 10
+                        pygame.mixer.Sound.play(self.buy_sound)
                     else: #player cannot afford it
-                        pass #play error audio
+                        pygame.mixer.Sound.play(self.error_sound)
                 if self.shopkeeper.selling == True: #selling menu open
                     if self.inventory.elaberryGrown >= 1: #player has at least 1 grown elaberry
                         self.inventory.elaberryGrown -= 1
                         self.inventory.rockTotal += 40
+                        pygame.mixer.Sound.play(self.buy_sound)
                     else: #player has no grown elaberry
-                        pass #play error audio
+                        pygame.mixer.Sound.play(self.error_sound)
 
             if event.key == pygame.K_p: #buy OR sell honeyshrooms
                 if self.shopkeeper.purchasing == True: #purchase menu open
                     if self.inventory.rockTotal >= 5: #player can buy honeyshroom
                         self.inventory.honeyshroomSeeds += 1
                         self.inventory.rockTotal -= 5
+                        pygame.mixer.Sound.play(self.buy_sound)
                     else: #player cannot afford it
-                        pass #play error audio
+                        pygame.mixer.Sound.play(self.error_sound)
                 if self.shopkeeper.selling == True: #selling menu open
                     if self.inventory.honeyshroomGrown >= 1:
                         self.inventory.honeyshroomGrown -= 1
                         self.inventory.rockTotal += 20
+                        pygame.mixer.Sound.play(self.buy_sound)
                     else: #player has no grown honeyshroom
-                        pass #play error audio
+                        pygame.mixer.Sound.play(self.error_sound)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
