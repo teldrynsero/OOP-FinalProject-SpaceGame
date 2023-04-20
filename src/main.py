@@ -140,16 +140,23 @@ class Game:
                     if self.inventory.rockTotal >= 10:
                         self.inventory.elaberrySeeds += 1
                         self.inventory.rockTotal -= 10
+                else:
+                    self.plant_name = "elaberries"
 
             if event.key == pygame.K_p: #buy elaberries
                 if self.shopkeeper.purchasing == True: #purchase menu open
                     if self.inventory.rockTotal >= 5:
                         self.inventory.honeyshroomSeeds += 1
                         self.inventory.rockTotal -= 5
+                else:
+                    self.plant_name = "honeyshroom"
 
-            if event.key == pygame.K_e:
-                self.all_plants.setdefault((self.player.x, self.player.y), "honeyshroom")
-                Game.create_plant(self,self.all_plants[(self.player.x, self.player.y)])
+            if event.key == pygame.K_e: # planting
+                if self.plant_name == "honeyshroom":
+                    self.inventory.honeyshroomSeeds -=1
+                elif self.plant_name == "elaberries":
+                    self.inventory.elaberrySeeds -=1
+                Game.create_plant(self,self.plant_name)
                 print(self.all_plants)
 
         if event.type == pygame.KEYUP:
@@ -177,10 +184,12 @@ class Game:
     # TESTING
     def create_plant(self, plant_name):
         self.plant = Plant(plant_name, self.player.x, self.player.y)
+        # self.all_plants.setdefault((self.player.x, self.player.y), self.plant)
+        self.all_plants.setdefault(self.plant, self.plant.plant_bounds)
         print(self.plant.file_name)
         self.plant_sprite = Game.load(self.plant.file_name)
         self.plant_rect = self.plant_sprite.get_rect(topleft = (self.player.x, self.player.y))
-        self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))
+        # self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))
 
     def on_render(self):
         self._display_surf.blit(self._image_surf,(0,0))
@@ -195,7 +204,9 @@ class Game:
             self._display_surf.blit(self.playerSprite,(self.player.x,self.player.y))
 
             for key in self.all_plants:
-                self._display_surf.blit(self.plant_sprite,key)
+                self.plant_sprite = Game.load(key.file_name)
+                self.plant_rect = self.plant_sprite.get_rect(topleft = (self.player.x, self.player.y))
+                self._display_surf.blit(self.plant_sprite,key.plant_point)
 
             keys = pygame.key.get_pressed()
 
