@@ -1,5 +1,5 @@
 class Npc:
-    npc_talking = False #player is talking to np
+    npc_talking = False #player is talking to npc
     first_time_talking = True
     fps = 5 #animation speed
     value = 0 #to animate through npc sprites
