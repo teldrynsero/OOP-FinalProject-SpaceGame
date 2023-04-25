@@ -90,7 +90,7 @@ class Game:
         mixer.music.set_volume(0.7)
         mixer.music.play(-1) #plays forever
 
-        font_url = resource_path("media/Pixeled.ttf")
+        font_url = resource_path("media/img/Pixeled.ttf")
         self.font = pygame.font.Font(font_url, 15)
         self.beginning_text = self.font.render(self.renderedText.tutorial1, True, pygame.Color(255,255,255))
         self.npc_text = self.font.render('', True, pygame.Color(255,255,255))
