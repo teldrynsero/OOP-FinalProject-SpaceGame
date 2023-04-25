@@ -137,6 +137,7 @@ class Game:
                             self.shop_text2 = self.font.render(self.renderedText.shop2, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                             self.shopkeeper.shop_talking = True #show SHOP npc text
                         else: #press t again to stop talking
+                            self.beginning_text = self.font.render(self.renderedText.tutorial7, True, pygame.Color(255,255,255))
                             self.shopkeeper.shop_talking = False
                             self.shopkeeper.purchasing = False
                             self.shopkeeper.selling = False
@@ -153,7 +154,8 @@ class Game:
 
             if event.key == pygame.K_b: #buy seeds from shop
                 if self.shopkeeper.shop_talking == True: #currently talking to shop
-                    self.starting_text_show = False #tutorial ends for now
+                    #self.starting_text_show = False #tutorial ends for now
+                    self.beginning_text = self.font.render(self.renderedText.tutorial6, True, pygame.Color(255,255,255))
                     self.purchase_text = self.font.render(self.renderedText.purchase, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                     self.purchase_text1 = self.font.render(self.renderedText.purchase1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                     self.shopkeeper.purchasing = True
@@ -199,7 +201,7 @@ class Game:
                         pygame.mixer.Sound.play(self.buy_sound)
                     else: #player has no grown honeyshroom
                         pygame.mixer.Sound.play(self.error_sound)
-                else: # "hold" honeyshrooms
+                            else: # "hold" honeyshrooms
                     self.plant_name = "honeyshroom"
                     
             if event.key == pygame.K_e: # planting
@@ -220,6 +222,14 @@ class Game:
                         if key.stage < key.max_stage:
                             key.stage +=1
                         print(key.name + str(key.stage))
+
+            if event.key == pygame.K_f: #change between equipped seeds
+                if self.inventory.equip == 1:
+                    self.inventory.equip = 2
+                    self.inventory.equipName = "Honeyshrooms"
+                elif self.inventory.equip == 2:
+                    self.inventory.equip = 1
+                    self.inventory.equipName = "Elaberries"
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
@@ -385,6 +395,8 @@ class Game:
                     self._display_surf.blit(self.sell_text1, (130, 265))
 
             if self.show_inventory == True: #inventory shows seed amount and rock (currency amount) and grown crops
+                self.equippedSeeds = self.font.render('Equipped Seeds: ' + str(self.inventory.equipName), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
+                self._display_surf.blit(self.equippedSeeds, (10,330))
                 self.elaSeeds = self.font.render('Elaberry Seeds: ' + str(self.inventory.elaberrySeeds), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
                 self._display_surf.blit(self.elaSeeds, (10,365))
                 self.honSeeds = self.font.render('Honeyshroom Seeds: ' + str(self.inventory.honeyshroomSeeds), True, pygame.Color(255,255,255), pygame.Color(155,52,179))
