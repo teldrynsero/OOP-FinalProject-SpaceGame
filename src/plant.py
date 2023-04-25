@@ -9,7 +9,7 @@ class Plant():
     def __init__(self, name, x, y):
         self.x = x
         self.y = y
-        self.plant_bounds = pygame.Rect((x,y), (105,48))
+        self.plant_bounds = pygame.Rect((x+16,y+124), (72,48))
         self.name = name + "_"
         self.stage = 0
 
