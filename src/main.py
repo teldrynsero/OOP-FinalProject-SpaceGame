@@ -7,6 +7,7 @@ from inventory import Inventory
 from renderedtext import RenderedText
 import sys
 import os
+from plant import Plant
 
 #The use of multiple smaller classes (ex. Player & Npc) that
 #work with a bigger class (Game) is an example of the use
@@ -28,6 +29,7 @@ def resource_path(relative_path):
     
     return os.path.join(base_path,relative_path)
 
+
 class Game:
     def __new__(cls): #create instance if none exist, else only use preexisting instance
         if not hasattr(cls, 'instance'):
@@ -48,6 +50,8 @@ class Game:
         self.starting_text_show = False
         self.show_inventory = False
         self.clock = pygame.time.Clock()
+        self.garden = {} # keep track of all planted seeds
+        self.picked_plants = []
 
     def load(image): #makes loading images easier
         imageName = image
@@ -84,6 +88,11 @@ class Game:
         self.npc_talk_sound = pygame.mixer.Sound(npc_talk_url)
         shop_talk_url = resource_path("media/sounds/shoptalk.mp3")
         self.shop_talk_sound = pygame.mixer.Sound(shop_talk_url)
+
+        planting_url = resource_path("media/sounds/plant.wav")
+        self.planting_sound = pygame.mixer.Sound(planting_url)
+        water_url = resource_path("media/sounds/water.wav")
+        self.water_sound = pygame.mixer.Sound(water_url)
 
         music_url = resource_path("media/sounds/earthshine.mp3")
         mixer.music.load(music_url)
@@ -195,7 +204,7 @@ class Game:
                         pygame.mixer.Sound.play(self.buy_sound)
                     else: #player has no grown honeyshroom
                         pygame.mixer.Sound.play(self.error_sound)
-            
+
             if event.key == pygame.K_f: #change between equipped seeds
                 if self.inventory.equip == 1:
                     self.inventory.equip = 2
@@ -203,6 +212,37 @@ class Game:
                 elif self.inventory.equip == 2:
                     self.inventory.equip = 1
                     self.inventory.equipName = "Elaberries"
+                    
+            if event.key == pygame.K_e: # planting
+                if self.inventory.equipName == "Honeyshrooms": # "holding" honeyshrooms
+                    if self.inventory.honeyshroomSeeds >= 1:
+                        self.inventory.honeyshroomSeeds -=1
+                        Game.create_plant(self,"honeyshroom")
+                        print(self.garden)
+                elif self.inventory.equipName == "Elaberries": # "holding" elaberries
+                    if self.inventory.elaberrySeeds >= 1:
+                        self.inventory.elaberrySeeds -=1
+                        Game.create_plant(self,"elaberries")
+                        print(self.garden)
+                pygame.mixer.Sound.play(self.planting_sound)
+
+            if event.key == pygame.K_q: # watering
+                for key in self.garden:
+                    if self.playerSprite_rect.colliderect(key.plant_bounds):
+                        if key.stage < key.max_stage:
+                            key.stage +=1
+                            pygame.mixer.Sound.play(self.water_sound)
+                        else:
+                            if key.name == "honeyshroom_":
+                                self.inventory.honeyshroomGrown +=1
+                            elif key.name == "elaberries_":
+                                self.inventory.elaberryGrown +=1
+                            self.picked_plants.append(key)
+                        # print(key.name + str(key.stage))
+                for item in self.picked_plants:
+                    del self.garden[item]
+                    del item
+                self.picked_plants.clear()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a: #stopped moving left
@@ -226,6 +266,15 @@ class Game:
                 if self.nonplayablechar.value >= len(self.npcSprite):
                     self.nonplayablechar.value = 0
 
+    def create_plant(self, plant_name):
+        self.plant = Plant(plant_name, self.player.x, self.player.y)
+        # self.all_plants.setdefault((self.player.x, self.player.y), self.plant)
+        self.garden.setdefault(self.plant, self.plant.plant_bounds)
+        print(self.plant.name)
+        self.plant_sprite = Game.load(self.plant.name + str(self.plant.stage))
+        # self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
+        # self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))
+
     def on_render(self):
         self._display_surf.blit(self._image_surf,(0,0))
 
@@ -238,6 +287,11 @@ class Game:
             self._display_surf.blit(self.npc,(200,70))
             self._display_surf.blit(self.shopkeeperSprite,(470,70))
             self._display_surf.blit(self.playerSprite,(self.player.x,self.player.y))
+
+            for key in self.garden:
+                self.plant_sprite = Game.load(key.name + str(key.stage))
+                # self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
+                self._display_surf.blit(self.plant_sprite,key.plant_point)
 
             keys = pygame.key.get_pressed()
 
@@ -329,7 +383,7 @@ class Game:
 
             if self.player.y < 60:
                 self.player.y = 60
-
+                
             if self.starting_text_show == True: #tutorial text
                 if keys[pygame.K_a] or keys[pygame.K_s] or  keys[pygame.K_w] or  keys[pygame.K_d]: #player has used WASD
                     if self.player.first_move == True:
