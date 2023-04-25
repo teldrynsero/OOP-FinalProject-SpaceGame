@@ -1,0 +1,12 @@
+@startuml npc
+scale 1
+title  "UML Class Diagram"
+class Npc {
+	.. Instance Variables ..
+	+ npc_talking: bool
+	+ first_time_talking: bool
+    + fps: int
+    + value: int
+    + next_frame_time: int
+}
+@enduml

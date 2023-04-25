@@ -29,7 +29,6 @@ def resource_path(relative_path):
     
     return os.path.join(base_path,relative_path)
 
-
 class Game:
     def __new__(cls): #create instance if none exist, else only use preexisting instance
         if not hasattr(cls, 'instance'):
@@ -75,6 +74,7 @@ class Game:
         self.shop_rect = pygame.Rect((470,70),(80,35)) #shopkeeper npc boundaries
         self.ground = Game.load("ground")
         self.star = Game.load("star")
+        self.wateringCan = Game.load("watercan")
 
         #sound effects
         error_url = resource_path("media/sounds/invalid.mp3")
@@ -159,7 +159,6 @@ class Game:
 
             if event.key == pygame.K_b: #buy seeds from shop
                 if self.shopkeeper.shop_talking == True: #currently talking to shop
-                    #self.starting_text_show = False #tutorial ends for now
                     self.beginning_text = self.font.render(self.renderedText.tutorial6, True, pygame.Color(255,255,255))
                     self.purchase_text = self.font.render(self.renderedText.purchase, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
                     self.purchase_text1 = self.font.render(self.renderedText.purchase1, True, pygame.Color(255,255,255),pygame.Color(155,52,179))
@@ -206,6 +205,7 @@ class Game:
                         pygame.mixer.Sound.play(self.error_sound)
 
             if event.key == pygame.K_f: #change between equipped seeds
+                self.beginning_text = self.font.render(self.renderedText.tutorial8, True, pygame.Color(255,255,255))
                 if self.inventory.equip == 1:
                     self.inventory.equip = 2
                     self.inventory.equipName = "Honeyshrooms"
@@ -214,21 +214,29 @@ class Game:
                     self.inventory.equipName = "Elaberries"
                     
             if event.key == pygame.K_e: # planting
+                self.beginning_text = self.font.render(self.renderedText.tutorial9, True, pygame.Color(255,255,255))
                 if self.inventory.equipName == "Honeyshrooms": # "holding" honeyshrooms
                     if self.inventory.honeyshroomSeeds >= 1:
                         self.inventory.honeyshroomSeeds -=1
                         Game.create_plant(self,"honeyshroom")
-                        print(self.garden)
+                        #print(self.garden)
+                        pygame.mixer.Sound.play(self.planting_sound)
+                    else: #no seeds to plant!
+                        pygame.mixer.Sound.play(self.error_sound)
                 elif self.inventory.equipName == "Elaberries": # "holding" elaberries
                     if self.inventory.elaberrySeeds >= 1:
                         self.inventory.elaberrySeeds -=1
                         Game.create_plant(self,"elaberries")
-                        print(self.garden)
-                pygame.mixer.Sound.play(self.planting_sound)
+                        #print(self.garden)
+                        pygame.mixer.Sound.play(self.planting_sound)
+                    else: #no seeds to plant!
+                        pygame.mixer.Sound.play(self.error_sound)
 
             if event.key == pygame.K_q: # watering
                 for key in self.garden:
                     if self.playerSprite_rect.colliderect(key.plant_bounds):
+                        self._display_surf.blit(self.wateringCan,(self.player.x+10,self.player.y+10))
+                        self.starting_text_show = False #tutorial ENDS
                         if key.stage < key.max_stage:
                             key.stage +=1
                             pygame.mixer.Sound.play(self.water_sound)
@@ -270,7 +278,7 @@ class Game:
         self.plant = Plant(plant_name, self.player.x, self.player.y)
         # self.all_plants.setdefault((self.player.x, self.player.y), self.plant)
         self.garden.setdefault(self.plant, self.plant.plant_bounds)
-        print(self.plant.name)
+        #print(self.plant.name)
         self.plant_sprite = Game.load(self.plant.name + str(self.plant.stage))
         # self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
         # self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))

@@ -1,0 +1,7 @@
+@startuml interaction
+title "UML Class Interaction"
+Game "1" - Inventory: manages >
+Game "1" - Npc: manages >
+Game "1" - Plant: manages >
+Game "1" - Player: manages >
+@enduml

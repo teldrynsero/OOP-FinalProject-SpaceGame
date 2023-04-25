@@ -1,0 +1,13 @@
+@startuml shopkeeper
+scale 1
+title  "UML Class Diagram"
+class Shopkeeper {
+	.. Instance Variables ..
+	+ shop_talking: bool
+	+ purchasing: bool
+    + selling: bool
+    + fps: int
+    + value: int
+    + next_frame_time: int
+}
+@enduml

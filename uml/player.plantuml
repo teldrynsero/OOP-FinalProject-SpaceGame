@@ -1,0 +1,12 @@
+@startuml player
+scale 1
+title  "UML Class Diagram"
+class Player {
+	.. Instance Variables ..
+	+ x: int
+	+ y: int
+    + x_change: int
+    + y_change: int
+    + first_move: bool
+}
+@enduml

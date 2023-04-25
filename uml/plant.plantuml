@@ -1,0 +1,13 @@
+@startuml plant
+scale 1
+title  "UML Class Diagram"
+class Plant {
+	.. Instance Variables ..
+	+ x: int
+	+ y: int
+    + plant_bounds: Rect
+    + name: str
+    + stage: int
+    + max_stage: int
+}
+@enduml

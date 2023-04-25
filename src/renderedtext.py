@@ -7,6 +7,8 @@ class RenderedText:
     tutorial5 = 'Press B to purchase seeds.'
     tutorial6 = 'Press T again to close the shop.'
     tutorial7 = 'Press F to equip seeds.'
+    tutorial8 = 'Press E to plant seeds.'
+    tutorial9 = 'Press Q to water seeds.'
 
     #text shown for npc talking
     npc1 = 'I gift you 50 rocks.'

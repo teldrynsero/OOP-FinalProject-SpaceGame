@@ -1,0 +1,14 @@
+@startuml inventory
+scale 1
+title  "UML Class Diagram"
+class Inventory {
+	.. Instance Variables ..
+	+ equip: int
+	+ equipName: str
+    + rockTotal: int
+    + elaberrySeeds: int
+    + honeyshroomSeeds: int
+    + elaberryGrown: int
+    + honeyshroomGrown: int
+}
+@enduml

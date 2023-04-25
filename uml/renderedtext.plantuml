@@ -1,0 +1,25 @@
+@startuml renderedtext
+scale 1
+title  "UML Class Diagram"
+class RenderedText {
+	.. Instance Variables ..
+	+ tutorial1: str
+	+ tutorial2: str
+    + tutorial3: str
+    + tutorial4: str
+    + tutorial5: str
+    + tutorial6: str
+    + tutorial7: str
+    + tutorial8: str
+    + tutorial9: str
+    + npc1: str
+    + npc2: str
+    + shop: str
+    + shop1: str
+    + shop2: str
+    + purchase: str
+    + purchase1: str
+    + sell: str
+    + sell1: str
+}
+@enduml

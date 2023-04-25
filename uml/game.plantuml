@@ -1,0 +1,31 @@
+@startuml game
+scale 1
+title  "UML Class Diagram"
+class Game {
+	.. Instance Variables ..
+	- _running: bool 
+	- _display_surf: None
+	+ size: int
+	- _image_surf: None
+	+ player: Player
+	+ inventory: Inventory
+	+ nonplayablechar: Npc
+	+ shopkeeper: Shopkeeper
+	+ renderedText: RenderedText
+	+ game_started: bool
+	+ starting_text_show: bool
+	+ show_inventory: bool
+	+ clock: Clock 
+	+ garden: dict 
+	+ picked_plants: list
+	.. Instance Methods ..
+	+ load(): None
+	+ on_init(): None
+	+ on_event(): None
+	+ on_loop(): None
+	+ create_plant(): None
+	+ on_render(): None
+	+ on_cleanup(): None
+	+ on_execute(): None
+}
+@enduml
