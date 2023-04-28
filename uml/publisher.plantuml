@@ -1,0 +1,12 @@
+@startuml publisher
+scale 1
+title  "UML Class Diagram"
+class Publisher {
+	.. Instance Variables ..
+    - _subscribers: list
+    .. Instance Methods ..
+    + notify(): None 
+    + attach(): None 
+    + detach(): None
+}
+@enduml

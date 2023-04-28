@@ -10,5 +10,7 @@ class Inventory {
     + honeyshroomSeeds: int
     + elaberryGrown: int
     + honeyshroomGrown: int
+    .. Instance Methods ..
+    + update(): None
 }
 @enduml

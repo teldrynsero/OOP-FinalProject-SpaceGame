@@ -4,4 +4,5 @@ Game "1" - Inventory: manages >
 Game "1" - Npc: manages >
 Game "1" - Plant: manages >
 Game "1" - Player: manages >
+Publisher "1" - Plant: manages >
 @enduml

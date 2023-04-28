@@ -7,7 +7,12 @@ class Plant {
 	+ y: int
     + plant_bounds: Rect
     + name: str
+    + file_name: str
     + stage: int
     + max_stage: int
+    - _harvested: bool 
+    + plant_point: int
+    .. Instance Methods ..
+    + harvested(): None
 }
 @enduml
