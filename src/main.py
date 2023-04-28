@@ -21,6 +21,13 @@ from plant import Plant
 #only one Game instance is needed, thus making the use of
 #the singleton pattern useful.
 
+# The use of the COMMON DESIGN PATTERN known as OBSERVER
+# allows one object to choose to be updated based on changes
+# to another, without constantly checking for differences.
+# In this implementation, it allows the inventory to be
+# updated when a plant is harvested, without constantly
+# checking via "if" statements.
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -219,7 +226,6 @@ class Game:
                     if self.inventory.honeyshroomSeeds >= 1:
                         self.inventory.honeyshroomSeeds -=1
                         Game.create_plant(self,"honeyshroom")
-                        #print(self.garden)
                         pygame.mixer.Sound.play(self.planting_sound)
                     else: #no seeds to plant!
                         pygame.mixer.Sound.play(self.error_sound)
@@ -227,27 +233,26 @@ class Game:
                     if self.inventory.elaberrySeeds >= 1:
                         self.inventory.elaberrySeeds -=1
                         Game.create_plant(self,"elaberries")
-                        #print(self.garden)
                         pygame.mixer.Sound.play(self.planting_sound)
                     else: #no seeds to plant!
                         pygame.mixer.Sound.play(self.error_sound)
 
-            if event.key == pygame.K_q: # watering
+            if event.key == pygame.K_q: # watering/harvesting
                 for key in self.garden:
                     if self.playerSprite_rect.colliderect(key.plant_bounds):
-                        self._display_surf.blit(self.wateringCan,(self.player.x+10,self.player.y+10))
                         self.starting_text_show = False #tutorial ENDS
-                        if key.stage < key.max_stage:
-                            key.stage +=1
-                            pygame.mixer.Sound.play(self.water_sound)
-                        else:
-                            if key.name == "honeyshroom_":
-                                self.inventory.honeyshroomGrown +=1
-                            elif key.name == "elaberries_":
-                                self.inventory.elaberryGrown +=1
+                        # if not key.harvested:
+                        if key.stage == key.max_stage:
+                            key.harvested = True
                             self.picked_plants.append(key)
-                        # print(key.name + str(key.stage))
+                            pygame.mixer.Sound.play(self.planting_sound)
+                        else:
+                            self._display_surf.blit(self.wateringCan,(self.player.x+10,self.player.y+10))
+                            pygame.mixer.Sound.play(self.water_sound)
+                            key.stage += 1
+
                 for item in self.picked_plants:
+                    item.detach(self.inventory)
                     del self.garden[item]
                     del item
                 self.picked_plants.clear()
@@ -276,12 +281,8 @@ class Game:
 
     def create_plant(self, plant_name):
         self.plant = Plant(plant_name, self.player.x, self.player.y)
-        # self.all_plants.setdefault((self.player.x, self.player.y), self.plant)
-        self.garden.setdefault(self.plant, self.plant.plant_bounds)
-        #print(self.plant.name)
-        self.plant_sprite = Game.load(self.plant.name + str(self.plant.stage))
-        # self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
-        # self._display_surf.blit(self.plant_sprite,(self.player.x,self.player.y))
+        self.plant.attach(self.inventory) # inventory will be notified when a plant is "harvested"
+        self.garden.setdefault(self.plant, self.plant.plant_point)
 
     def on_render(self):
         self._display_surf.blit(self._image_surf,(0,0))
@@ -297,9 +298,8 @@ class Game:
             self._display_surf.blit(self.playerSprite,(self.player.x,self.player.y))
 
             for key in self.garden:
-                self.plant_sprite = Game.load(key.name + str(key.stage))
-                # self.plant_rect = self.plant_sprite.get_rect(bottomright = (self.player.x, self.player.y))
-                self._display_surf.blit(self.plant_sprite,key.plant_point)
+                self.plant_sprite = Game.load(key.file_name + str(key.stage))
+                self._display_surf.blit(self.plant_sprite,self.garden[key])
 
             keys = pygame.key.get_pressed()
 
