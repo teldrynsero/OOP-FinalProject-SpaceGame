@@ -241,7 +241,6 @@ class Game:
                 for key in self.garden:
                     if self.playerSprite_rect.colliderect(key.plant_bounds):
                         self.starting_text_show = False #tutorial ENDS
-                        # if not key.harvested:
                         if key.stage == key.max_stage:
                             key.harvested = True
                             self.picked_plants.append(key)
