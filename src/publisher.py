@@ -1,4 +1,6 @@
-class Publisher: # allows objects to keep track of other objects
+class Publisher:
+    """allows objects to keep track of changes to other objects
+    """
     def __init__(self):
         self._subscribers = []
 
