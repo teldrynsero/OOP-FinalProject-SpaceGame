@@ -29,6 +29,8 @@ from plant import Plant
 # checking via "if" statements.
 
 def resource_path(relative_path):
+    """Use this for loading resources like images and sounds
+    """
     try:
         base_path = sys._MEIPASS
     except Exception:
@@ -37,12 +39,16 @@ def resource_path(relative_path):
     return os.path.join(base_path,relative_path)
 
 class Game:
-    def __new__(cls): #create instance if none exist, else only use preexisting instance
+    def __new__(cls):
+        """Create instance if none exist, else only use preexisting instance
+        """
         if not hasattr(cls, 'instance'):
             cls.instance = super(Game, cls).__new__(cls)
         return cls.instance
     
     def __init__(self):
+        """Initialize everything for the game
+        """
         self._running = True
         self._display_surf = None
         self.size = self.weight, self.height = 640, 480
@@ -60,12 +66,19 @@ class Game:
         self.picked_plants = []
 
     def load(image): #makes loading images easier
+        """Load images using this function
+
+        Args:
+            image (str): image name
+        """
         imageName = image
         imageTitle = resource_path("media/img/"+str(imageName)+".png")
         image = pygame.image.load(imageTitle)
         return image
  
     def on_init(self):
+        """Initialize everything here when game is run
+        """
         pygame.init()
         mixer.init()
         pygame.display.set_caption('Space Farm Game')
@@ -112,6 +125,11 @@ class Game:
         self.npc_text = self.font.render('', True, pygame.Color(255,255,255))
 
     def on_event(self, event):
+        """Do something when an event is read
+
+        Args:
+            event (user input): key press or game window closed
+        """
         if event.type == pygame.QUIT:
             self._running = False #close the game
 
@@ -269,6 +287,8 @@ class Game:
         pygame.display.update()
 
     def on_loop(self):
+        """Loop these
+        """
         time_now = pygame.time.get_ticks()
         if (time_now > self.nonplayablechar.next_frame_time): #show npc animation
             if self.nonplayablechar.npc_talking == True: #npc was talked to
@@ -284,6 +304,8 @@ class Game:
         self.garden.setdefault(self.plant, self.plant.plant_point)
 
     def on_render(self):
+        """Render these images and text
+        """
         self._display_surf.blit(self._image_surf,(0,0))
 
         if self.game_started == True:
@@ -430,9 +452,13 @@ class Game:
         pygame.display.flip() #update sprite
 
     def on_cleanup(self):
+        """Clean up game if quit
+        """
         pygame.quit()
  
     def on_execute(self):
+        """Run this when game is executed
+        """
         if self.on_init() == False:
             self._running = False
  

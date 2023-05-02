@@ -10,6 +10,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Data:
+	"""Generate random int value that fits the player.x
+	"""
 	x_value: st.SearchStrategy[int]
 
 data = Data(x_value=st.integers(min_value=0, max_value=570)) #x values
