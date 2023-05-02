@@ -299,6 +299,11 @@ class Game:
                     self.nonplayablechar.value = 0
 
     def create_plant(self, plant_name):
+        """create a plant object based on player position and seeds held
+
+        Args:
+            plant_name (string): the type of seeds the player is holding and that will be planted
+        """
         self.plant = Plant(plant_name, self.player.x, self.player.y)
         self.plant.attach(self.inventory) # inventory will be notified when a plant is "harvested"
         self.garden.setdefault(self.plant, self.plant.plant_point)

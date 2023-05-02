@@ -1,4 +1,6 @@
 class RenderedText:
+    """in-game text to be used
+    """
     #text shown for tutorial
     tutorial1 = 'Use WASD keys to move.'
     tutorial2 = 'Press T to talk to the alien.'
